@@ -3,13 +3,12 @@
 @inject IViewLocalizer localizer
 @{
     Layout = "_Layout";
-    ViewBag.Title = localizer["B2D_Head_Title"];
-    var locale = CultureInfo.CurrentCulture.ToString();
+    ViewBag.Title = localizer["OCBT_Head_Title"];
 }
 
 @section Styles{
-    <link rel="stylesheet" href="~/css/simple-line-icons.css">
-    <link rel="stylesheet" href="~/css/webfont/zh-tw.css">
+    @*<link rel="stylesheet" href="~/css/simple-line-icons.css">
+    <link rel="stylesheet" href="~/css/webfont/zh-tw.css">*@
 }
 <div class="login-body">
     <div class="page-wrap login-wrap">
@@ -21,11 +20,11 @@
                             <h1 class="title">KKday @localizer["Login"]</h1>
                             <div class="form-group">
                                 <label class="addRedStar">@localizer["Email"]</label>
-                                <input type="email" id="email" name="email" class="form-control" placeholder="@localizer["Login_Email_Hint"]" tabindex="1" required />
+                                <input type="email" id="email" name="email" class="form-control" placeholder="@localizer["Placeholder_Login_Email"]" tabindex="1" required />
                             </div>
                             <div class="form-group">
                                 <label class="addRedStar">@localizer["Password"]</label>
-                                <input type="password" id="password" name="password" class="form-control" placeholder="@localizer["Login_Password_Hint"]" tabindex="2" required />
+                                <input type="password" id="password" name="password" class="form-control" placeholder="@localizer["Placeholder_Login_Password"]" tabindex="2" required />
                             </div>
 
                             <div class="form-group">
@@ -53,17 +52,17 @@
             }
         });
 
-        $('#login_form').bootstrapValidator({
+        @*$('#login_form').bootstrapValidator({
             feedbackIcons: { valid: null, invalid: null, validating: null }
-        });
+        });*@
 
     });
 
     function UserAuth() {
         var timezone = moment.tz.guess();
-
+        console.log(_root_path);
         // 欄位驗證=>Use Bt Validator
-        $('#login_form').data("bootstrapValidator").validate();
+        @*$('#login_form').data("bootstrapValidator").validate();
         if (!$('#login_form').data("bootstrapValidator").isValid()) return false;
 
         $.ajax({
@@ -73,9 +72,6 @@
                 Email: $('#email').val(), Password: $('#password').val(), TimeZone: timezone, RememberMe: $("#rememberMe").is(":checked")
             },
             error: function (xhr, status, error) {
-                @* console.log(xhr);*@
-                var err = "(" + xhr.responseText + ")";
-                alert("Ajax request error:" + err);
             },
             success: function (result) {
                 if (result.status == "OK") {
@@ -85,6 +81,6 @@
                     alert(result.msg);
                 }
             }
-        });
+        });*@
     }
 </script>

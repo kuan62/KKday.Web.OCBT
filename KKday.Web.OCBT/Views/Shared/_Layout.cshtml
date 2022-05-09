@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - KKday.Web.OCBT</title>
+    <title>@ViewData["Title"]</title>
     @* CSS *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
@@ -18,24 +18,15 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+    <script type="text/javascript">
+        var _root_path = '@Url.Content("~/")';
+        var _culture = '@CultureInfo.CurrentCulture.ToString()';
+        $(function () {
+        });
+    </script>
 </head>
 <body>
     <header>
-        <script>
-            $(function () {
-                $('ul.menu li:not(.member-dropdown) .dropdown-menu > li').on('click', function () {
-                    var active = $(this);
-                    var activeText = active.text();
-                    var others = active.siblings('li');
-                    var dropdownBtn = active.parent().siblings('[data-toggle=dropdown]')
-
-                    active.addClass('active');
-                    others.removeClass('active');
-                    dropdownBtn.html(activeText + '<i class="fa fa-angle-down"></i>')
-                });
-            })
-        </script>
-
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">KKday.Web.OCBT</a>
@@ -73,7 +64,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - KKday.Web.OCBT - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            COPYRIGHT &copy; @(DateTime.Today.Year) KKday All rights reserved.
         </div>
     </footer>
 </body>

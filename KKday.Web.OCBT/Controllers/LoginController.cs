@@ -17,7 +17,7 @@ namespace KKday.Web.OCBT.Controllers
         {
             // Claim取使用者類型
             //var userType = User.FindFirst("Account")?.Value;
-            //if (userType != null) return Redirect("~/KKday");
+            //if (userType != null) return Redirect("~/");
 
             return View();
         }
