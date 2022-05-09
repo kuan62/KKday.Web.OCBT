@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using KKday.Web.OCBT.AppCode;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -55,6 +56,68 @@ namespace KKday.Web.OCBT
 
             #endregion ASP.NET Core多語系挖字
 
+            #region Cookie 驗證服務
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = ".OCBT.SharedCookie";
+                    options.LoginPath = "/Login/";
+                    options.SlidingExpiration = true;
+                    // options.Cookie.Domain = "kkday.com";
+
+                    options.Events.OnValidatePrincipal = (context) =>
+                    {
+                        int failCount = 0;
+                        var identity = (ClaimsIdentity)context.Principal.Identity;
+                        var versionKey = identity.FindFirst("Ver");
+                        if (versionKey == null)
+                        {
+                            failCount++;
+                        }
+                        else
+                        {
+                            var serverVersion = new Version(Website.Instance.PrincipleVersion); // 與 ~/Login/AuthenAsync的 Claim
+                            var localeVersion = new Version(versionKey.Value);
+                            // Principal Version => 0:同版本, 1:不同版本
+                            if (serverVersion.CompareTo(localeVersion) == 1)
+                            {
+                                failCount++;
+                            }
+                        }
+                        var guidKey = identity.FindFirst("GuidKey");
+                        if (guidKey == null)
+                        {
+                            identity.AddClaims(new[] {
+                                new Claim("GuidKey", System.Guid.NewGuid().ToString("N"))
+                            });
+                            context.ShouldRenew = true;
+                            // identity.AddClaims(new[] { new Claim("GuidKey", System.Guid.NewGuid().ToString("N")) });
+                            // context.ShouldRenew = true;
+                            failCount++;
+                        }
+                        if (failCount > 0)
+                        {
+                            context.RejectPrincipal();
+                            context.Response.Redirect("/Login/LogOutAsync");
+                        }
+                        // 驗證cookie內IdentityType是否存在
+                        if (identity.FindFirst("IdentityType") == null)
+                        {
+                            // 不存在則否認此cookie
+                            context.RejectPrincipal();
+                        }
+                        return Task.CompletedTask;
+                    };
+                });
+            #endregion Cookie 驗證服務
+
+            // 指定Cookie授權政策區分不同身分者
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("KKdayOnly", policy => policy.RequireClaim("UserType", "KKDAY"));
+            });
+
+            services.AddSession();
             services.AddControllersWithViews().AddViewLocalization();
         }
 
@@ -81,6 +144,8 @@ namespace KKday.Web.OCBT
 
             app.UseRouting();
 
+            app.UseCookiePolicy();
+            app.UseSession();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

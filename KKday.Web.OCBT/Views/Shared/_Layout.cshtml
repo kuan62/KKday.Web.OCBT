@@ -1,14 +1,41 @@
-﻿<!DOCTYPE html>
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer localizer
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - KKday.Web.OCBT</title>
+    @* CSS *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("Styles", required: false)
+
+    @* JavaScript *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
 </head>
 <body>
     <header>
+        <script>
+            $(function () {
+                $('ul.menu li:not(.member-dropdown) .dropdown-menu > li').on('click', function () {
+                    var active = $(this);
+                    var activeText = active.text();
+                    var others = active.siblings('li');
+                    var dropdownBtn = active.parent().siblings('[data-toggle=dropdown]')
+
+                    active.addClass('active');
+                    others.removeClass('active');
+                    dropdownBtn.html(activeText + '<i class="fa fa-angle-down"></i>')
+                });
+            })
+        </script>
+
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">KKday.Web.OCBT</a>
@@ -23,6 +50,15 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @(CultureInfo.CurrentCulture.ToString().ToLower().Contains("zh-tw") ? "繁體中文" : (CultureInfo.CurrentCulture.ToString().ToLower().Contains("en-us") ? "English" : "繁體中文"))
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="@Url.Content("~/Locale/Index/zh-tw")">繁體中文</a>
+                                <a class="dropdown-item" href="@Url.Content("~/Locale/Index/en-us")">English</a>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -40,9 +76,5 @@
             &copy; 2022 - KKday.Web.OCBT - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
 </body>
 </html>

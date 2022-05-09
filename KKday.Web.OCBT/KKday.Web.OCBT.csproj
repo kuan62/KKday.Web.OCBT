@@ -8,15 +8,19 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.24" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="log4net" Version="2.0.14" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="AppCode\" />
     <None Remove="Resources\" />
     <None Remove="Newtonsoft.Json" />
+    <None Remove="log4net" />
+    <None Remove="Views\Login\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppCode\" />
     <Folder Include="Resources\" />
+    <Folder Include="Views\Login\" />
   </ItemGroup>
 </Project>
