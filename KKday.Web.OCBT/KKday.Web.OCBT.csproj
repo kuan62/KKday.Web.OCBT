@@ -22,5 +22,9 @@
     <Folder Include="AppCode\" />
     <Folder Include="Resources\" />
     <Folder Include="Views\Login\" />
+    <Folder Include="wwwroot\css\pages\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\css\pages\" />
   </ItemGroup>
 </Project>
