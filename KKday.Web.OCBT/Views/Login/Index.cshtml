@@ -1,8 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
-@using System.Globalization
-@inject IViewLocalizer localizer
-@{
-    Layout = "_Layout";
+﻿@{
     ViewBag.Title = localizer["OCBT_Head_Title"];
 }
 
@@ -24,7 +20,7 @@
                         </div>
                         <div class="form-group">
                             <label class="addRedStar">@localizer["Password"]</label>
-                            <input type="password" id="password" name="password" class="form-control" placeholder="@localizer["Placeholder_Login_Password"]" tabindex="2" required />
+                            <input type="password" id="psw" name="password" class="form-control" placeholder="@localizer["Placeholder_Login_Password"]" tabindex="2" required />
                         </div>
                         <div class="form-group">
                             <label>
@@ -33,7 +29,6 @@
                             </label>
                         </div>
                         <input type="button" name="login-submit" id="login-submit" tabindex="4" class="btn btn-primary btn-block" value="@localizer["Login"]" onclick="UserAuth();">
-
                     </div>
                 </form>
             </div>
@@ -50,21 +45,21 @@
             }
         });
 
-        @*$('#login_form').bootstrapValidator({
+        $('#login_form').bootstrapValidator({
             feedbackIcons: { valid: null, invalid: null, validating: null }
-        });*@
+        });
 
     });
 
     function UserAuth() {
         var timezone = moment.tz.guess();
-        console.log(_root_path);
+
         // 欄位驗證=>Use Bt Validator
-        @*$('#login_form').data("bootstrapValidator").validate();
+        $('#login_form').data("bootstrapValidator").validate();
         if (!$('#login_form').data("bootstrapValidator").isValid()) return false;
 
         $.ajax({
-            url: _root_path + 'KKday/Login/AuthenAsync?culture=' + _culture,
+            url: _root_path + 'Login/AuthenAsync?culture=' + _culture,
             type: 'GET',
             data: {
                 Email: $('#email').val(), Password: $('#password').val(), TimeZone: timezone, RememberMe: $("#rememberMe").is(":checked")
@@ -79,6 +74,6 @@
                     alert(result.msg);
                 }
             }
-        });*@
+        });
     }
 </script>
