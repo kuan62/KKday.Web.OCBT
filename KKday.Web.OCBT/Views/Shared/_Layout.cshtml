@@ -1,11 +1,29 @@
-﻿<!DOCTYPE html>
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer localizer
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - KKday.Web.OCBT</title>
+    <title>@ViewData["Title"]</title>
+    @* CSS *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("Styles", required: false)
+
+    @* JavaScript *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+    <script type="text/javascript">
+        var _root_path = '@Url.Content("~/")';
+        var _culture = '@CultureInfo.CurrentCulture.ToString()';
+        $(function () {
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -24,6 +42,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @(CultureInfo.CurrentCulture.ToString().ToLower().Contains("zh-tw") ? "繁體中文" : (CultureInfo.CurrentCulture.ToString().ToLower().Contains("en-us") ? "English" : "繁體中文"))
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="@Url.Content("~/Locale/Index/zh-tw")">繁體中文</a>
+                                <a class="dropdown-item" href="@Url.Content("~/Locale/Index/en-us")">English</a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -37,12 +64,8 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - KKday.Web.OCBT - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            COPYRIGHT &copy; @(DateTime.Today.Year) KKday All rights reserved.
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
 </body>
 </html>
