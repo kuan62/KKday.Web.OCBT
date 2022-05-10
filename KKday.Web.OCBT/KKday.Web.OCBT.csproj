@@ -17,12 +17,16 @@
     <None Remove="Newtonsoft.Json" />
     <None Remove="log4net" />
     <None Remove="Views\Login\" />
+    <None Remove="Models\Model\" />
+    <None Remove="Models\Model\Login\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppCode\" />
     <Folder Include="Resources\" />
     <Folder Include="Views\Login\" />
     <Folder Include="wwwroot\css\pages\" />
+    <Folder Include="Models\Model\" />
+    <Folder Include="Models\Model\Login\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\css\pages\" />

@@ -114,7 +114,7 @@ namespace KKday.Web.OCBT
             // 指定Cookie授權政策區分不同身分者
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("KKdayOnly", policy => policy.RequireClaim("UserType", "KKDAY"));
+                options.AddPolicy("KKdayOnly", policy => policy.RequireClaim("IdentityType", "KKDAY"));
             });
 
             services.AddSession();

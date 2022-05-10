@@ -28,7 +28,7 @@
                                 @localizer["Login_Remember_Me"]
                             </label>
                         </div>
-                        <input type="button" name="login-submit" id="login-submit" tabindex="4" class="btn btn-primary btn-block" value="@localizer["Login"]" onclick="UserAuth();">
+                        <button type="button" tabindex="4" class="btn btn-primary btn-block" onclick="UserAuth();">@localizer["Login"]</button>
                     </div>
                 </form>
             </div>
@@ -59,21 +59,20 @@
         if (!$('#login_form').data("bootstrapValidator").isValid()) return false;
 
         $.ajax({
-            url: _root_path + 'Login/AuthenAsync?culture=' + _culture,
-            type: 'GET',
-            data: {
-                Email: $('#email').val(), Password: $('#password').val(), TimeZone: timezone, RememberMe: $("#rememberMe").is(":checked")
-            },
-            error: function (xhr, status, error) {
+            type: "POST",
+            url: _root_path + "Login/Authen",
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            data: $('#login_form').serialize(),
+            dataType: "json",
+            error: function (jqXHR, textStatus, errorThrown) {
             },
             success: function (result) {
                 if (result.status == "OK") {
                     window.location.href = result.url;
                 }
-                else {
-                    alert(result.msg);
-                }
+                else alert(result.msg);
             }
         });
     }
+
 </script>
