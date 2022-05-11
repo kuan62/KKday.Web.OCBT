@@ -19,6 +19,8 @@
     <None Remove="Views\Login\" />
     <None Remove="Models\Model\" />
     <None Remove="Models\Model\Login\" />
+    <None Remove="Proxy\" />
+    <None Remove="Models\Repository\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppCode\" />
@@ -27,6 +29,8 @@
     <Folder Include="wwwroot\css\pages\" />
     <Folder Include="Models\Model\" />
     <Folder Include="Models\Model\Login\" />
+    <Folder Include="Proxy\" />
+    <Folder Include="Models\Repository\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\css\pages\" />

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using KKday.Web.OCBT.AppCode;
 using KKday.Web.OCBT.Models.Model.Login;
+using KKday.Web.OCBT.Proxy;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -18,6 +20,12 @@ namespace KKday.Web.OCBT.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Policy = "KKdayOnly")]
     public class LoginController : Controller
     {
+        private readonly OAuthProxy _oAuthProxy;
+        public LoginController(OAuthProxy oAuthProxy)
+        {
+            _oAuthProxy = oAuthProxy;
+        }
+
         // GET: /<controller>/
         [AllowAnonymous]
         public IActionResult Index()
@@ -28,62 +36,74 @@ namespace KKday.Web.OCBT.Controllers
 
             return View();
         }
-
+        /// <summary>
+        /// 使用者登入認證
+        /// </summary>
+        /// <param name="rq"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         public async Task<IActionResult> Authen(LoginRqModel rq)
         {
-            string guidKey = Guid.NewGuid().ToString();
-            Dictionary<string, string> jsonData = new Dictionary<string, string>();
+            rq.guid_key = Guid.NewGuid().ToString();
+            Dictionary<string, string> jsonData = new Dictionary<string, string>() { { "status", "ERROR" } };
 
             try
             {
-                var claims = new List<Claim>
+                // Call OAuth 驗證 KKday E-mail
+                var account = _oAuthProxy.UserAuth(rq);
+                if (account.result == "0000")
                 {
-                    new Claim("Account", rq.email),
-                    new Claim("GuidKey", guidKey),
-                    new Claim("IdentityType", "KKDAY"),
-                    new Claim("Ver", Website.Instance.PrincipleVersion), // 帶入當前ClaimPriciple版號
-                };
-                var userIdentity = new ClaimsIdentity(claims, "login");
-                ClaimsPrincipal principal = new ClaimsPrincipal(userIdentity);
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    principal,
-                    new AuthenticationProperties()
+                    var claims = new List<Claim>
                     {
-                        ExpiresUtc = DateTime.UtcNow.AddDays(10), // 預設 Cookie 有效時間
-                        IsPersistent = false,
-                        AllowRefresh = true
-                    });
-                jsonData.Add("status", "OK");
-                jsonData.Add("GuidKey", guidKey);
-                jsonData.Add("url", Url.Content("~/"));
+                        new Claim("Account", account.userInfo.email),
+                        new Claim("UUID", account.userInfo.userUuid),
+                        new Claim("GuidKey", rq.guid_key),
+                        new Claim("IdentityType", "KKDAY"),
+                        new Claim("Ver", Website.Instance.PrincipleVersion), // 帶入當前ClaimPriciple版號
+                    };
+                    var userIdentity = new ClaimsIdentity(claims, "login");
+                    ClaimsPrincipal principal = new ClaimsPrincipal(userIdentity);
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        principal,
+                        new AuthenticationProperties()
+                        {
+                            ExpiresUtc = DateTime.UtcNow.AddDays(10), // 預設 Cookie 有效時間
+                            IsPersistent = rq.rememberme,
+                            AllowRefresh = true
+                        });
+                    jsonData["status"] = "OK";
+                    jsonData.Add("GuidKey", rq.guid_key);
+                    jsonData.Add("url", Url.Content("~/"));
+                }
+                else
+                {
+                    jsonData.Add("msg", account.result_message);
+                }
 
                 #region 登入後重新設定使用者的 Cookie Culture
-
-                // KKday-Locale 轉換對應到 RFC 4646 
-                var _culture = "zh-TW";//LocaleTool.Convert(account.LOCALE);
 
                 // 設定 Culture
                 HttpContext.Response.Cookies.Append(
                       CookieRequestCultureProvider.DefaultCookieName,
-                      CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(_culture))
+                      CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(CultureInfo.CurrentCulture.ToString()))
                    );
 
                 #endregion 登入後重新設定使用者的 Cookie Culture
             }
             catch (Exception ex)
             {
-                jsonData.Clear();
-                jsonData.Add("status", "ERROR");
+                Website.Instance.logger.FatalFormat($"GuidKey : {rq.guid_key}; OCBT Login Authen Error: Msg={ex.Message}, StackTrace={ex.StackTrace}");
                 jsonData.Add("msg", ex.Message);
             }
             return Json(jsonData);
         }
-
-        // 使用者登出 
+        /// <summary>
+        /// 使用者登出 
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
-        public async Task<IActionResult> LogOutAsync()
+        public async Task<IActionResult> LogOut()
         {
             try
             {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using KKday.Web.OCBT.AppCode;
+using KKday.Web.OCBT.Proxy;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -117,6 +118,10 @@ namespace KKday.Web.OCBT
                 options.AddPolicy("KKdayOnly", policy => policy.RequireClaim("IdentityType", "KKDAY"));
             });
 
+            #region Dependency Injection Regisgter --begin
+            services.AddSingleton<OAuthProxy>();
+            #endregion Dependency Injection Regisgter -- end
+
             services.AddSession();
             services.AddControllersWithViews().AddViewLocalization();
         }
@@ -134,6 +139,9 @@ namespace KKday.Web.OCBT
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            // 初始化-網站主控台
+            Website.Instance.Init(this.Configuration);
 
             // 多語系挖字初始設定
             var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
